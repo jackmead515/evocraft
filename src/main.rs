@@ -1,6 +1,5 @@
 extern crate rand;
 
-use consts::GRID_SIZE;
 use macroquad::prelude::*;
 
 pub mod consts;
@@ -39,29 +38,32 @@ async fn main() {
     let font = load_ttf_font("assets/unifont-15.0.06.ttf").await.expect("Failed to load font");
     let ref_font = Some(&font);
 
+    let ppos = consts::world_pos(20, 20);
+
     let mut player = Player {
         text: "8",
         color: Color::new(0.0, 1.0, 0.0, 1.0),
-        x: consts::GRID_SIZE as f32,
-        y: consts::GRID_SIZE as f32,
+        x: ppos.0,
+        y: ppos.1,
         animation: None,
     };
 
     let mut creatures = Vec::new();
 
-    let mut y = consts::SCREEN_HEIGHT / 2;
+    let mut cpos = consts::world_pos(30, 30);
     for i in 0..1000 {
-        let x = i * consts::GRID_SIZE + consts::SCREEN_WIDTH / 2;
+        cpos.0 + (i as f32 * consts::GRID_SIZE as f32);
         creatures.push(Creature {
             text: "@",
-            x: x as f32,
-            y: y as f32,
+            x: cpos.0,
+            y: cpos.1,
             brain: creature::Brain::random(),
             animation: None
         });
 
         if i > 0 && i % 10 == 0 {
-            y += consts::GRID_SIZE;
+            cpos.0 = consts::world_pos(30, 30).0;
+            cpos.1 += consts::GRID_SIZE as f32;
         }
     }
 
@@ -227,6 +229,7 @@ async fn main() {
         draw_text_ex(player.text, player.x, player.y, TextParams {
             font: ref_font,
             font_size: 20,
+            color: player.color,
             ..Default::default()
         });
 
