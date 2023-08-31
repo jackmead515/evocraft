@@ -9,9 +9,10 @@ pub mod update;
 pub mod animation;
 pub mod creature;
 pub mod genes;
+pub mod models;
 
-use animation::{AnimationTransition, CurveType};
-use creature::{Creature, OutputTypes};
+use models::*;
+use creature::{Creature, Brain};
 
 fn window_conf() -> Conf {
     Conf {
@@ -24,217 +25,79 @@ fn window_conf() -> Conf {
     }
 }
 
-struct Player {
-    text: &'static str,
-    color: Color,
-    x: f32,
-    y: f32,
-    animation: Option<AnimationTransition>,
-}
-
 #[macroquad::main(window_conf)]
 async fn main() {
 
     let font = load_ttf_font("assets/unifont-15.0.06.ttf").await.expect("Failed to load font");
-    let ref_font = Some(&font);
 
-    let ppos = consts::world_pos(20, 20);
+    let mut creatures = Vec::with_capacity(1000);
+    let mut cpos = Position::new(consts::world_pos(30, 30));
+    let mut i = 30;
 
-    let mut player = Player {
-        text: "8",
-        color: Color::new(0.0, 1.0, 0.0, 1.0),
-        x: ppos.0,
-        y: ppos.1,
-        animation: None,
-    };
-
-    let mut creatures = Vec::new();
-
-    let mut cpos = consts::world_pos(30, 30);
-    for i in 0..1000 {
-        cpos.0 + (i as f32 * consts::GRID_SIZE as f32);
-        creatures.push(Creature {
-            text: "@",
-            x: cpos.0,
-            y: cpos.1,
-            brain: creature::Brain::random(),
-            animation: None
-        });
-
-        if i > 0 && i % 10 == 0 {
-            cpos.0 = consts::world_pos(30, 30).0;
-            cpos.1 += consts::GRID_SIZE as f32;
+    // create  creatures with random brains across
+    // the grid starting from 30, 30 to 50, 50
+    while i < 50 {
+        let mut j = 30;
+        while j < 50 {
+            creatures.push(Creature { 
+                text: "@",
+                x: cpos.x,
+                y: cpos.y,
+                brain: Brain::random(),
+                animation: None,
+            });
+            cpos.x += consts::GRID_SIZE as f32;
+            j += 1;
         }
+        cpos.x = consts::world_x(30);
+        cpos.y += consts::world_y(1);
+        i += 1;
     }
 
+    let mut game_state = GameState {
+        stats: GameStats {
+            fps: 0,
+            frame_time: 0.0,
+            elapsed: 0.0,
+        },
+        font: font,
+        player: Player {
+            text: "8",
+            color: Color::new(0.0, 1.0, 0.0, 1.0),
+            position: models::Position::new(consts::world_pos(20, 20)),
+            animation: None,
+        },
+        creatures: creatures
+    };
+
     loop {
-        let fps = get_fps();
-        let elapsed = get_time();
-        let frame_time = get_frame_time();
+        game_state.stats.fps = get_fps();
+        game_state.stats.frame_time = get_frame_time();
+        game_state.stats.elapsed = get_time();
 
-        //input::input();
-        //update::update();
-        draw::draw();
+        let player = &game_state.player;
+        let mut camera = Camera2D::from_display_rect(
+            Rect::new(
+                player.position.x - consts::SCREEN_WIDTH as f32 / 2.0,
+                player.position.y - consts::SCREEN_HEIGHT as f32 / 2.0,
+                consts::SCREEN_WIDTH as f32,
+                consts::SCREEN_HEIGHT as f32
+            )
+        );
+        set_camera(&camera);
 
-        if is_key_down(KeyCode::D) {
-            if player.animation.is_none() {
-                player.animation = Some(
-                    AnimationTransition::new(
-                        (player.x, player.y),
-                        (player.x + consts::GRID_SIZE as f32, player.y),
-                        elapsed, 0.3, CurveType::EaseQuadInOut
-                    )
-                )
-            }
-        } else if is_key_down(KeyCode::A) {
-            if player.animation.is_none() {
-                player.animation = Some(
-                    AnimationTransition::new(
-                        (player.x, player.y),
-                        (player.x - consts::GRID_SIZE as f32, player.y),
-                        elapsed, 0.3, CurveType::EaseQuadInOut
-                    )
-                )
-            }
-        } else if is_key_down(KeyCode::W) {
-            if player.animation.is_none() {
-                player.animation = Some(
-                    AnimationTransition::new(
-                        (player.x, player.y),
-                        (player.x, player.y - consts::GRID_SIZE as f32),
-                        elapsed, 0.3, CurveType::EaseQuadInOut
-                    )
-                )
-            }
-        } else if is_key_down(KeyCode::S) {
-            if player.animation.is_none() {
-                player.animation = Some(
-                    AnimationTransition::new(
-                        (player.x, player.y),
-                        (player.x, player.y + consts::GRID_SIZE as f32),
-                        elapsed, 0.3, CurveType::EaseQuadInOut
-                    )
-                )
-            }
-        }
 
-        match player.animation {
-            Some(ref mut animation) => {
-                let (x, y) = animation.interpolate(elapsed);
-                player.x = x;
-                player.y = y;
-                if elapsed - animation.start_time > animation.duration as f64 {
-                    player.animation = None;
-                }
-            },
-            None => {}
-        }
-        
-        for creature in creatures.iter_mut() {
+        // set_camera(&Camera2D {
+        //     zoom: vec2(0.003, 0.003),
+        //     target: vec2(player.position.x, player.position.y),
+        //     ..Default::default()
+        // });
 
-            // gather all the inputs regardless of 
-            // whether or not the brain needs them
-            let inputs = vec![
-                creature.x,
-                creature.y,
-                player.x,
-                player.y,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-            ];
+        input::input(&mut game_state);
+        update::update(&mut game_state);
+        draw::draw(&game_state);
 
-            match creature.animation {
-                Some(ref mut animation) => {
-                    let (x, y) = animation.interpolate(elapsed);
-                    creature.x = x;
-                    creature.y = y;
-                    if elapsed - animation.start_time > animation.duration as f64 {
-                        creature.animation = None;
-                    }
-                },
-                None => {}
-            }
-            
-            if creature.animation.is_none() {
-                let (_, output_type) = creature.brain.compute(inputs);
-
-                match output_type {
-                    creature::OutputTypes::MoveUp => {
-                        creature.animation = Some(
-                            AnimationTransition::new(
-                                (creature.x, creature.y),
-                                (creature.x, creature.y - consts::GRID_SIZE as f32),
-                                elapsed, 0.3, CurveType::EaseQuadInOut
-                            )
-                        );
-                    },
-                    creature::OutputTypes::MoveDown => {
-                        creature.animation = Some(
-                            AnimationTransition::new(
-                                (creature.x, creature.y),
-                                (creature.x, creature.y + consts::GRID_SIZE as f32),
-                                elapsed, 0.3, CurveType::EaseQuadInOut
-                            )
-                        );
-                    },
-                    creature::OutputTypes::MoveLeft => {
-                        creature.animation = Some(
-                            AnimationTransition::new(
-                                (creature.x, creature.y),
-                                (creature.x - consts::GRID_SIZE as f32, creature.y),
-                                elapsed, 0.3, CurveType::EaseQuadInOut
-                            )
-                        );
-                    },
-                    creature::OutputTypes::MoveRight => {
-                        creature.animation = Some(
-                            AnimationTransition::new(
-                                (creature.x, creature.y),
-                                (creature.x + consts::GRID_SIZE as f32, creature.y),
-                                elapsed, 0.3, CurveType::EaseQuadInOut
-                            )
-                        );
-                    },
-                    _ => {}
-                }
-            }
-
-            // collide with wall
-            if creature.x <= 0.0 {
-                creature.x = 0.0;
-            }
-            if creature.x >= consts::SCREEN_WIDTH as f32 {
-                creature.x = consts::SCREEN_WIDTH as f32;
-            }
-            if creature.y <= 0.0 {
-                creature.y = 0.0;
-            }
-            if creature.y >= consts::SCREEN_HEIGHT as f32 {
-                creature.y = consts::SCREEN_HEIGHT as f32;
-            }
-
-            draw_text_ex(creature.text, creature.x, creature.y, TextParams {
-                font: ref_font,
-                font_size: 20,
-                ..Default::default()
-            });
-        }
-
-        draw_text_ex(player.text, player.x, player.y, TextParams {
-            font: ref_font,
-            font_size: 20,
-            color: player.color,
-            ..Default::default()
-        });
-
-        // draw fps
-        draw_text(&format!("FPS: {}", fps), 10.0, 20.0, 20.0, WHITE);
+        set_default_camera();
 
         next_frame().await
     }

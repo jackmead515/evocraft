@@ -13,3 +13,11 @@ pub fn grid_pos(x: f32, y: f32) -> (i32, i32) {
 pub fn world_pos(x: i32, y: i32) -> (f32, f32) {
     return (x as f32 * GRID_SIZE as f32, y as f32 * GRID_SIZE as f32);
 }
+
+pub fn world_x(x: i32) -> f32 {
+    return x as f32 * GRID_SIZE as f32;
+}
+
+pub fn world_y(y: i32) -> f32 {
+    return y as f32 * GRID_SIZE as f32;
+}
