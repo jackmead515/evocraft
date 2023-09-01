@@ -1,5 +1,4 @@
-use std::time::Instant;
-
+#[derive(Debug, Clone)]
 pub struct AnimationTransition {
     pub initial_position: (f32, f32),
     pub final_position: (f32, f32),
@@ -8,6 +7,7 @@ pub struct AnimationTransition {
     pub curve_type: CurveType,
 }
 
+#[derive(Debug, Clone)]
 pub enum CurveType {
     Linear,
     EaseIn,

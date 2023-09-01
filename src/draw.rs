@@ -32,7 +32,7 @@ pub fn draw(game_state: &GameState) {
 
     let creatures = &game_state.creatures;
     for creature in creatures.iter() {
-        draw_text_ex(creature.text, creature.x, creature.y, TextParams {
+        draw_text_ex(creature.text, creature.position.x, creature.position.y, TextParams {
             font: Some(&game_state.font),
             font_size: 20,
             ..Default::default()
@@ -51,5 +51,9 @@ pub fn draw(game_state: &GameState) {
     // draw fps
     draw_text(&format!("FPS: {}", game_state.stats.fps), 10.0, 20.0, 20.0, WHITE);
     draw_text(&format!("MP: {:?}", mouse_position()), 10.0, 40.0, 20.0, WHITE);
+
+    // draw player health and energy
+    draw_text(&format!("HP: {}", player.health.current), 10.0, 60.0, 20.0, WHITE);
+    draw_text(&format!("EP: {}", player.energy.current), 10.0, 80.0, 20.0, WHITE);
 }
 
