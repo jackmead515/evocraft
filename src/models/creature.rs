@@ -13,16 +13,15 @@ pub struct Creature {
     pub energy: Energy,
 }
 
-impl Deref for Creature {
-    type Target = Creature;
-
-    fn deref(&self) -> &Creature {
-        return &self;
-    }
-}
-
-impl DerefMut for Creature {
-    fn deref_mut(&mut self) -> &mut Creature {
-        return self;
+impl Creature {
+    pub fn new_random(position: Position, health: f32, energy: f32) -> Self {
+        return Creature {
+            text: "@",
+            position: position,
+            brain: Brain::random(),
+            animation: None,
+            health: Health::new(health),
+            energy: Energy::new(energy),
+        };
     }
 }

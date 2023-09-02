@@ -1,5 +1,7 @@
 pub const SCREEN_WIDTH: i32 = 1920;
 pub const SCREEN_HEIGHT: i32 = 1080;
+pub const GRID_WIDTH: i32 = 96;
+pub const GRID_HEIGHT: i32 = 54;
 pub const GRID_SIZE: i32 = 20;
 
 /// Returns the grid position of a given x and y coordinate.

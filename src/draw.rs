@@ -31,12 +31,14 @@ pub fn draw(game_state: &GameState) {
     });
 
     let creatures = &game_state.creatures;
-    for creature in creatures.iter() {
-        draw_text_ex(creature.text, creature.position.x, creature.position.y, TextParams {
-            font: Some(&game_state.font),
-            font_size: 20,
-            ..Default::default()
-        });
+    for creature in creatures {
+        if let Ok(c) = creature.lock() {
+            draw_text_ex(c.text, c.position.x, c.position.y, TextParams {
+                font: Some(&game_state.font),
+                font_size: 20,
+                ..Default::default()
+            });
+        }
     }
 
     // snap to grid

@@ -1,6 +1,7 @@
 extern crate rand;
+extern crate grid;
 
-use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 
 use macroquad::prelude::*;
 
@@ -12,7 +13,9 @@ pub mod animation;
 pub mod genes;
 pub mod models;
 pub mod creature;
+pub mod grid_map;
 
+use grid::Grid;
 use models::*;
 
 fn window_conf() -> Conf {
@@ -31,35 +34,49 @@ async fn main() {
 
     let font = load_ttf_font("assets/unifont-15.0.06.ttf").await.expect("Failed to load font");
 
-    let mut creature_map = ObjectMap::new(consts::SCREEN_WIDTH as usize, consts::SCREEN_HEIGHT as usize, 100);
+    let mut entity_map: Grid<Vec<EntityRef>> = grid::Grid::new(100, 100);
+ 
+    // create a 3d array on the stack memory of the grid
+    // this represents a complete map of all items in the grid
+    // like creatures, items, plants, things the player can
+    // interact with. Boundaries are not included in the grid
+    // Only 100 entities can be in a single grid cell stacked 
+    // on top of each other. Array indicies represent grid
+    // coordinates.
+    //let mut entity_map: Vec<Vec<Vec<(EntityType, u32)>>> = vec![vec![vec![]; consts::SCREEN_HEIGHT as usize]; consts::SCREEN_WIDTH as usize];
 
     let mut creatures = Vec::with_capacity(1000);
-    let mut cpos = Position::new(consts::world_pos(30, 30));
-    let mut i = 30;
 
-    // create  creatures with random brains across
-    // the grid starting from 30, 30 to 50, 50
+
+    // create as many creatures in the center of the screen
+    // in a box of 50x50 in grid coordinates
+    let mut i = 0;
     while i < 50 {
-        let mut j = 30;
+        let mut j = 0;
         while j < 50 {
-            let creature = Rc::new(Creature { 
-                text: "@",
-                position: Position::new(cpos.get()),
-                brain: Brain::random(),
-                animation: None,
-                health: Health::new(100.0),
-                energy: Energy::new(100.0),
-            });
-            creature_map.insert(creature.position.x as usize, creature.position.y as usize, Rc::clone(&creature));
-            creatures.push(creature);
-            cpos.x += consts::GRID_SIZE as f32;
+            let (gx, gy) = (20 + i, 20 + j);
+            let p = Position::new(consts::world_pos(gx, gy));
+            let c = Mutex::new(Creature::new_random(p, 100.0, 100.0));
+
+            if entity_map[gx as usize][gy as usize].len() >= 100 {
+                println!("grid map is full");
+                break;
+            }
+
+            let entity_ref = EntityRef {
+                entity_type: EntityType::Creature,
+                index: creatures.len(),
+                gx: gx as usize,
+                gy: gy as usize,
+            };
+        
+            entity_map[gx as usize][gy as usize].push(entity_ref);
+            creatures.push(c);
+
             j += 1;
         }
-        cpos.x = consts::world_x(30);
-        cpos.y += consts::world_y(1);
         i += 1;
     }
-
 
     let mut game_state = GameState {
         stats: GameStats {
@@ -71,13 +88,13 @@ async fn main() {
         player: Player {
             text: "8",
             color: Color::new(0.0, 1.0, 0.0, 1.0),
-            position: models::Position::new(consts::world_pos(20, 20)),
+            position: models::Position::new(consts::world_pos(10, 10)),
             health: Health::new(100.0),
             energy: Energy::new(100.0),
             animation: None,
         },
         creatures: creatures,
-        creature_map: creature_map,
+        entity_map: entity_map,
     };
 
     loop {
