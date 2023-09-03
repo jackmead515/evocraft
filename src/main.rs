@@ -1,9 +1,10 @@
 extern crate rand;
 extern crate grid;
 
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 
 use macroquad::prelude::*;
+use grid::Grid;
 
 pub mod consts;
 pub mod draw;
@@ -15,15 +16,15 @@ pub mod models;
 pub mod creature;
 pub mod grid_map;
 
-use grid::Grid;
+use consts::*;
 use models::*;
 
 fn window_conf() -> Conf {
     Conf {
         window_title: "Window Conf".to_owned(),
         fullscreen: false,
-        window_height: consts::SCREEN_HEIGHT,
-        window_width: consts::SCREEN_WIDTH,
+        window_height: SCREEN_HEIGHT as i32,
+        window_width: SCREEN_WIDTH as i32,
         window_resizable: false,
         ..Default::default()
     }
@@ -35,47 +36,27 @@ async fn main() {
     let font = load_ttf_font("assets/unifont-15.0.06.ttf").await.expect("Failed to load font");
 
     let mut entity_map: Grid<Vec<EntityRef>> = grid::Grid::new(100, 100);
- 
-    // create a 3d array on the stack memory of the grid
-    // this represents a complete map of all items in the grid
-    // like creatures, items, plants, things the player can
-    // interact with. Boundaries are not included in the grid
-    // Only 100 entities can be in a single grid cell stacked 
-    // on top of each other. Array indicies represent grid
-    // coordinates.
-    //let mut entity_map: Vec<Vec<Vec<(EntityType, u32)>>> = vec![vec![vec![]; consts::SCREEN_HEIGHT as usize]; consts::SCREEN_WIDTH as usize];
 
-    let mut creatures = Vec::with_capacity(1000);
+    let mut creatures = Vec::with_capacity(600);
 
+    let mut gx = 30;
+    let mut gy = 20;
 
-    // create as many creatures in the center of the screen
-    // in a box of 50x50 in grid coordinates
-    let mut i = 0;
-    while i < 50 {
-        let mut j = 0;
-        while j < 50 {
-            let (gx, gy) = (20 + i, 20 + j);
-            let p = Position::new(consts::world_pos(gx, gy));
-            let c = Mutex::new(Creature::new_random(p, 100.0, 100.0));
+    for _ in 0..600 {
+        let p = Position::new(world_pos(gx, gy));
+        let c = Mutex::new(Creature::new_random(p, 100.0, 100.0, get_time()));
 
-            if entity_map[gx as usize][gy as usize].len() >= 100 {
-                println!("grid map is full");
-                break;
-            }
-
-            let entity_ref = EntityRef {
-                entity_type: EntityType::Creature,
-                index: creatures.len(),
-                gx: gx as usize,
-                gy: gy as usize,
-            };
-        
+        if entity_map[gx as usize][gy as usize].len() < 100 {
+            let entity_ref = EntityRef::new(EntityType::Creature, creatures.len(), gx, gy);
             entity_map[gx as usize][gy as usize].push(entity_ref);
             creatures.push(c);
-
-            j += 1;
         }
-        i += 1;
+
+        gx += 1;
+        if gx >= 60 {
+            gx = 30;
+            gy += 1;
+        }
     }
 
     let mut game_state = GameState {
@@ -101,31 +82,11 @@ async fn main() {
         game_state.stats.fps = get_fps();
         game_state.stats.frame_time = get_frame_time();
         game_state.stats.elapsed = get_time();
-
-        // let player = &game_state.player;
-        // let mut camera = Camera2D::from_display_rect(
-        //     Rect::new(
-        //         player.position.x - consts::SCREEN_WIDTH as f32 / 2.0,
-        //         player.position.y - consts::SCREEN_HEIGHT as f32 / 2.0,
-        //         consts::SCREEN_WIDTH as f32,
-        //         consts::SCREEN_HEIGHT as f32
-        //     )
-        // );
-        // set_camera(&camera);
-
-
-        // set_camera(&Camera2D {
-        //     zoom: vec2(0.003, 0.003),
-        //     target: vec2(player.position.x, player.position.y),
-        //     ..Default::default()
-        // });
-
+        
         input::input(&mut game_state);
         update::update(&mut game_state);
         draw::draw(&game_state);
 
-        // set_default_camera();
-
-        next_frame().await
+        next_frame().await;
     }
 }

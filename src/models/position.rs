@@ -1,3 +1,4 @@
+use crate::consts;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Position {
@@ -6,6 +7,7 @@ pub struct Position {
 }
 
 impl Position {
+
     pub fn new(pos: (f32, f32)) -> Position {
         Position {
             x: pos.0,

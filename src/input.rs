@@ -8,7 +8,7 @@ pub fn input(game_state: &mut GameState) {
     let player = &mut game_state.player;
     let elapsed = game_state.stats.elapsed;
 
-    if player.animation.is_none() && player.energy.current > 5.0 {
+    if player.animation.is_none() && player.energy.current > 3.0 {
         if is_key_down(KeyCode::D) {
             player.animation = Some(
                 AnimationTransition::new(
@@ -17,7 +17,7 @@ pub fn input(game_state: &mut GameState) {
                     elapsed, 0.3, CurveType::EaseQuadInOut
                 )
             );
-            player.energy.expend(5.0);
+            player.energy.expend(3.0);
 
         } else if is_key_down(KeyCode::A) {
             player.animation = Some(
@@ -27,7 +27,7 @@ pub fn input(game_state: &mut GameState) {
                     elapsed, 0.3, CurveType::EaseQuadInOut
                 )
             );
-            player.energy.expend(5.0);
+            player.energy.expend(3.0);
 
         } else if is_key_down(KeyCode::W) {
             player.animation = Some(
@@ -37,7 +37,7 @@ pub fn input(game_state: &mut GameState) {
                     elapsed, 0.3, CurveType::EaseQuadInOut
                 )
             );
-            player.energy.expend(5.0);
+            player.energy.expend(3.0);
 
         } else if is_key_down(KeyCode::S) {
             player.animation = Some(
@@ -47,7 +47,7 @@ pub fn input(game_state: &mut GameState) {
                     elapsed, 0.3, CurveType::EaseQuadInOut
                 )
             );
-            player.energy.expend(5.0);
+            player.energy.expend(3.0);
 
         }
     }

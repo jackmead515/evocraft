@@ -5,7 +5,7 @@ pub struct Brain {
     pub hidden_neurons: Vec<Neuron>,
     pub output_neurons: Vec<Neuron>,
     pub activation: ActivationFunction,
-    pub total_input_length: usize,
+    pub total_input_length: usize
 }
 
 #[derive(Debug, Clone)]
@@ -14,7 +14,7 @@ pub struct Neuron {
     pub activation: ActivationFunction,
 
     /// the bias of the neuron
-    pub bias: f32,
+    pub bias: Vec<f32>,
 
     /// the weights of the neuron
     pub weights: Vec<f32>,

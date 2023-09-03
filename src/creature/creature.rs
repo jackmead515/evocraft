@@ -4,7 +4,7 @@ use crate::models::brain::*;
 
 impl Neuron {
 
-    pub fn new(activation: ActivationFunction, bias: f32, weights: Vec<f32>) -> Neuron {
+    pub fn new(activation: ActivationFunction, bias: Vec<f32>, weights: Vec<f32>) -> Neuron {
         Neuron {
             activation: activation,
             bias: bias,
@@ -18,8 +18,9 @@ impl Neuron {
 
         for index in 0..self.weights.len() {
             let weight = self.weights[index];
+            let bias = self.bias[index];
             let input = inputs[index];
-            total += weight * input;
+            total += weight * input + bias;
         }
 
         // sigmoid activation
@@ -39,15 +40,14 @@ impl Brain {
         let mut output_options = OutputTypes::variants();
 
         let total_inputs = thread_rand.gen_range(1..=input_options.len());
-        let total_hidden = thread_rand.gen_range(1..=10);
+        let total_hidden = thread_rand.gen_range(1..=30);
         let total_outputs = thread_rand.gen_range(1..=output_options.len());
 
         // select random input types
         let mut input_types: Vec<InputTypes> = Vec::with_capacity(total_inputs);
         for _ in 0..total_inputs {
             let index = thread_rand.gen_range(0..input_options.len());
-            let input_type = input_options.remove(index);
-            input_types.push(input_type);
+            input_types.push(input_options.remove(index));
         }
 
         let total_input_length = InputTypes::total_inputs(&input_types);
@@ -56,10 +56,11 @@ impl Brain {
         let mut hidden_neurons: Vec<Neuron> = Vec::with_capacity(total_hidden);
         for _ in 0..total_hidden {
             let activation = thread_rand.gen_range(0..=2);
-            let bias = thread_rand.gen_range(-1.0..=1.0);
+            let mut bias: Vec<f32> = Vec::with_capacity(total_input_length);
             let mut weights: Vec<f32> = Vec::with_capacity(total_input_length);
             for _ in 0..total_input_length {
                 weights.push(thread_rand.gen_range(-1.0..=1.0));
+                bias.push(thread_rand.gen_range(-1.0..=1.0));
             }
             hidden_neurons.push(Neuron::new(ActivationFunction::from(activation), bias, weights));
         }
@@ -68,18 +69,18 @@ impl Brain {
         let mut output_types: Vec<OutputTypes> = Vec::with_capacity(total_outputs);
         for _ in 0..total_outputs {
             let index = thread_rand.gen_range(0..output_options.len());
-            let output_type = output_options.remove(index);
-            output_types.push(output_type);
+            output_types.push(output_options.remove(index));
         }
 
         // select random output neurons
         let mut output_neurons: Vec<Neuron> = Vec::with_capacity(total_outputs);
         for _ in 0..total_outputs {
             let activation = thread_rand.gen_range(0..=2);
-            let bias = thread_rand.gen_range(-1.0..=1.0);
+            let mut bias: Vec<f32> = Vec::with_capacity(total_hidden);
             let mut weights: Vec<f32> = Vec::with_capacity(total_hidden);
             for _ in 0..total_hidden {
                 weights.push(thread_rand.gen_range(-1.0..=1.0));
+                bias.push(thread_rand.gen_range(-1.0..=1.0));
             }
             output_neurons.push(Neuron::new(ActivationFunction::from(activation), bias, weights));
         }
@@ -90,7 +91,7 @@ impl Brain {
             output_types: output_types,
             output_neurons: output_neurons,
             activation: ActivationFunction::Softmax,
-            total_input_length: total_input_length
+            total_input_length: total_input_length,
         };
     }
 
