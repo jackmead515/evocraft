@@ -31,6 +31,10 @@ impl AnimationTransition {
         }
     }
 
+    pub fn is_complete(&self, now: f64) -> bool {
+        return now - self.start_time > self.duration as f64;
+    }
+
     pub fn interpolate(&self, now: f64) -> (f32, f32) {
         let progress: f32 = (now - self.start_time) as f32 / self.duration;
         match self.curve_type {

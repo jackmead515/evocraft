@@ -14,6 +14,6 @@ pub struct GameState {
     pub stats: GameStats,
     pub font: Font,
     pub player: Player,
-    pub creatures: Vec<Mutex<Creature>>,
+    pub creatures: Vec<Creature>,
     pub entity_map: Grid<Vec<EntityRef>>,
 }

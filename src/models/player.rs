@@ -2,13 +2,13 @@ use macroquad::prelude::*;
 
 use crate::models::Position;
 use crate::animation::AnimationTransition;
-use crate::models::{Health, Energy};
+use crate::models::ZeroMaxStat;
 
 pub struct Player {
     pub text: &'static str,
     pub color: Color,
     pub position: Position,
     pub animation: Option<AnimationTransition>,
-    pub health: Health,
-    pub energy: Energy,
+    pub health: ZeroMaxStat,
+    pub energy: ZeroMaxStat,
 }

@@ -5,7 +5,10 @@ pub struct Brain {
     pub hidden_neurons: Vec<Neuron>,
     pub output_neurons: Vec<Neuron>,
     pub activation: ActivationFunction,
-    pub total_input_length: usize
+    pub last_decisions: Vec<OutputTypes>,
+    pub total_input_length: usize,
+    pub last_decision_time: f64,
+    pub decision_speed: f32,
 }
 
 #[derive(Debug, Clone)]
@@ -30,6 +33,10 @@ pub enum InputTypes {
     PlayerPosition,
     PlayerHealth,
     PlayerEnergy,
+    RandomInput,
+    TimeSinoidInput,
+    LastDecisions,
+    CurrentAge,
 }
 
 
@@ -63,6 +70,10 @@ impl InputTypes {
             4 => InputTypes::CurrentEnergy,
             5 => InputTypes::PlayerEnergy,
             6 => InputTypes::PlayerHealth,
+            7 => InputTypes::RandomInput,
+            8 => InputTypes::TimeSinoidInput,
+            9 => InputTypes::LastDecisions,
+            10 => InputTypes::CurrentAge,
             _ => panic!("Invalid input type"),
         }
     }
@@ -76,6 +87,10 @@ impl InputTypes {
             InputTypes::CurrentEnergy,
             InputTypes::PlayerEnergy,
             InputTypes::PlayerHealth,
+            InputTypes::RandomInput,
+            InputTypes::TimeSinoidInput,
+            InputTypes::LastDecisions,
+            InputTypes::CurrentAge,
         ]
     }
 
@@ -88,6 +103,10 @@ impl InputTypes {
             InputTypes::CurrentEnergy => 1,
             InputTypes::PlayerEnergy => 1,
             InputTypes::PlayerHealth => 1,
+            InputTypes::RandomInput => 1,
+            InputTypes::TimeSinoidInput => 1,
+            InputTypes::LastDecisions => 5,
+            InputTypes::CurrentAge => 1,
         }
     }
 
