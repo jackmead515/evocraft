@@ -1,9 +1,19 @@
 #[derive(Debug, Clone)]
 pub struct AnimationTransition {
+
+    /// global start position for the animation
     pub initial_position: (f32, f32),
+
+    /// global final position for the animation
     pub final_position: (f32, f32),
+
+    /// the time at which the animation should start
     pub start_time: f64,
+
+    /// the duration of the animation in seconds
     pub duration: f32,
+
+    /// the type of curve to use for the animation
     pub curve_type: CurveType,
 }
 

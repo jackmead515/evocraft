@@ -11,6 +11,7 @@ pub struct GameStats {
 }
 
 pub struct GameState {
+    pub demo: DemoType,
     pub stats: GameStats,
     pub font: Font,
     pub player: Player,

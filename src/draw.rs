@@ -69,8 +69,6 @@ pub fn draw(game_state: &GameState) {
     draw_text(&format!("Mouse WP: {:?}", (mx, my)), 10.0, 40.0, 20.0, WHITE);
     draw_text(&format!("Mouse GP: {:?}", (gx, gy)), 10.0, 60.0, 20.0, WHITE);
 
-    
-
     draw_text(&format!("Player WP: {:?}", (px, py)), 10.0, 80.0, 20.0, WHITE);
     draw_text(&format!("Player GP: {:?}", (pgx, pgy)), 10.0, 100.0, 20.0, WHITE);
     draw_text(&format!("Player Health: {:?}", player.health.value), 10.0, 120.0, 20.0, WHITE);

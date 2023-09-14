@@ -6,6 +6,7 @@ pub mod stats;
 pub mod creature;
 pub mod brain;
 pub mod object_map;
+pub mod demo;
 
 // prelude
 pub use position::*;
@@ -16,3 +17,4 @@ pub use stats::*;
 pub use creature::*;
 pub use brain::*;
 pub use object_map::*;
+pub use demo::*;
