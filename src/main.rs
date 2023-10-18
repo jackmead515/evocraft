@@ -4,6 +4,7 @@ extern crate grid;
 use macroquad::prelude::*;
 
 pub mod consts;
+pub mod util;
 pub mod draw;
 pub mod update;
 pub mod animation;
@@ -11,7 +12,10 @@ pub mod genes;
 pub mod models;
 pub mod creature;
 pub mod grid_map;
+pub mod textures;
+pub mod world;
 pub mod demo;
+pub mod brain;
 
 use consts::*;
 use models::*;
@@ -38,7 +42,13 @@ async fn main() {
         game_state.stats.frame_time = get_frame_time();
         game_state.stats.elapsed = get_time();
 
-        demo::update(&mut game_state);
+        let mut zoom_factor = game_state.stats.zoom_factor;
+        let scroll = mouse_wheel().1;
+        zoom_factor += scroll * 0.01;
+        zoom_factor = clamp(zoom_factor, 0.05, 0.1);
+        game_state.stats.zoom_factor = zoom_factor;
+
+        //demo::update(&mut game_state);
         update::update(&mut game_state);
         draw::draw(&game_state);
 

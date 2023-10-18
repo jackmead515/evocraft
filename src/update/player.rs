@@ -1,21 +1,23 @@
 use macroquad::prelude::*;
 
 use crate::models::*;
-use crate::consts::*;
 use crate::animation::*;
+use crate::consts;
 
 pub fn update(game_state: &mut GameState) {
     let player = &mut game_state.player;
     let elapsed = game_state.stats.elapsed;
 
+    let speed = 0.1;
+
     // update the player movement animation
-    if player.animation.is_none() && player.energy.value > 3.0 {
+    if player.animation.is_none() {
         if is_key_down(KeyCode::D) {
             player.animation = Some(
                 AnimationTransition::new(
-                    player.position.get(),
-                    (player.position.x + GRID_SIZE as f32, player.position.y),
-                    elapsed, 0.3, CurveType::EaseQuadInOut
+                    player.position,
+                    Vec2::new(player.position.x + 1.0, player.position.y),
+                    elapsed, speed, CurveType::Linear
                 )
             );
             player.energy.consume(3.0);
@@ -23,9 +25,9 @@ pub fn update(game_state: &mut GameState) {
         } else if is_key_down(KeyCode::A) {
             player.animation = Some(
                     AnimationTransition::new(
-                    player.position.get(),
-                    (player.position.x - GRID_SIZE as f32, player.position.y),
-                    elapsed, 0.3, CurveType::EaseQuadInOut
+                    player.position,
+                    Vec2::new(player.position.x - 1.0, player.position.y),
+                    elapsed, speed, CurveType::Linear
                 )
             );
             player.energy.consume(3.0);
@@ -33,9 +35,9 @@ pub fn update(game_state: &mut GameState) {
         } else if is_key_down(KeyCode::W) {
             player.animation = Some(
                 AnimationTransition::new(
-                    player.position.get(),
-                    (player.position.x, player.position.y - GRID_SIZE as f32),
-                    elapsed, 0.3, CurveType::EaseQuadInOut
+                    player.position,
+                    Vec2::new(player.position.x, player.position.y - 1.0),
+                    elapsed, speed, CurveType::Linear
                 )
             );
             player.energy.consume(3.0);
@@ -43,9 +45,9 @@ pub fn update(game_state: &mut GameState) {
         } else if is_key_down(KeyCode::S) {
             player.animation = Some(
                 AnimationTransition::new(
-                    player.position.get(),
-                    (player.position.x, player.position.y + GRID_SIZE as f32),
-                    elapsed, 0.3, CurveType::EaseQuadInOut
+                    player.position,
+                    Vec2::new(player.position.x, player.position.y + 1.0),
+                    elapsed, speed, CurveType::Linear
                 )
             );
             player.energy.consume(3.0);
@@ -56,12 +58,22 @@ pub fn update(game_state: &mut GameState) {
     // update the player position if there is an animation
     match player.animation {
         Some(ref mut animation) => {
-            player.position.sett(animation.interpolate(elapsed));
+            player.position = animation.interpolate(elapsed);
             if animation.is_complete(elapsed) {
                 player.animation = None;
+                player.position = consts::grid_pos(&player.position);
             }
         },
         None => {}
+    }
+
+    // collide with world boundaries
+    let world = &game_state.world;
+    if let Some(boundary) = world.collide(&player.position) {
+        if let Some(ref mut animation) = player.animation {
+            player.position = animation.initial_pos;
+            player.animation = None;
+        }
     }
 
     // every 1 second, restore 1 energy to player

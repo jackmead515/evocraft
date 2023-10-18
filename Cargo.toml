@@ -7,6 +7,9 @@ edition = "2021"
 
 [dependencies]
 macroquad = "0.4.2"
+macroquad-tiled = "0.2.0"
 rand = "0.8.5"
 grid = "0.10.0"
+perlin2d = "0.2.6"
+rayon = "1.8.0"
 

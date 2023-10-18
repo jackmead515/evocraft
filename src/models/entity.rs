@@ -1,13 +1,5 @@
 use crate::models::game_state::GameState;
 
-pub trait Entity {
-    
-    fn update(&mut self, game_state: &mut GameState);
-
-    fn draw(&self, game_state: &GameState);
-
-}
-
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum EntityType {
@@ -26,8 +18,8 @@ pub enum EntityType {
 pub struct EntityRef {
     pub entity_type: EntityType,
     pub index: usize,
-    pub gx: u32,
-    pub gy: u32,
+    pub grid_x: u32,
+    pub grid_y: u32,
     remove: bool,
 }
 
@@ -37,8 +29,8 @@ impl EntityRef {
         EntityRef {
             entity_type: entity_type,
             index: index,
-            gx: gx,
-            gy: gy,
+            grid_x: gx,
+            grid_y: gy,
             remove: false,
         }
     }
