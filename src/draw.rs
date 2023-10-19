@@ -64,15 +64,9 @@ pub fn draw(game_state: &GameState) {
 
     set_camera(camera);
 
-    for f in &world.floor {
-        if viewport.contains(f.position) {
-            draw_tile(&texture_map.get(&f.texture), f.position, Vec2::new(1.0, 1.0));
-        }
-    }
-
-    for b in &world.boundaries {
-        if viewport.contains(b.position) {
-            draw_tile(&texture_map.get(&b.texture), b.position, Vec2::new(1.0, 1.0));
+    for f in world.iter_floor(viewport) {
+        if let Some(tile) = f {
+            draw_tile(&texture_map.get(&tile.texture), tile.position, Vec2::new(1.0, 1.0));
         }
     }
 

@@ -205,13 +205,13 @@ pub fn update(game_state: &mut GameState) {
         // }
 
         // collide with world boundaries
-        let world = &game_state.world;
-        if let Some(_) = world.collide(&creature.position) {
-            if let Some(ref mut animation) = creature.movement {
-                creature.position = animation.initial_pos;
-                creature.movement = None;
-            }
-        }
+        // let world = &game_state.world;
+        // if let Some(_) = world.collide(&creature.position) {
+        //     if let Some(ref mut animation) = creature.movement {
+        //         creature.position = animation.initial_pos;
+        //         creature.movement = None;
+        //     }
+        // }
 
         // creature should reproduce if:
         // energy is greater than 50%

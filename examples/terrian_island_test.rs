@@ -29,25 +29,26 @@ fn generate_island(range: isize, gradient: &Vec<f32>) -> Vec<(Vec2, f64, Color)>
 
     //let mut index = 0;
 
-    let grid = (-range..range)
+    let grid = (0..range)
         .into_par_iter()
         .map(|x| {
             let perlin = PerlinNoise2D::new(
-                4, 1.0, 1.0, 1.00, 2.0, (100.0, 100.0), 1.0, seed.abs() as i32
+                5, 1.0, 1.0, 1.00, 2.0, (100.0, 100.0), 1.0, seed.abs() as i32
             );
 
             let mut grid = Vec::with_capacity((range*2) as usize);
 
-            for y in -range..range {
+            for y in 0..range {
                 let mut noise = perlin.get_noise(x as f64, y as f64);
     
                 // normalize to 0 to 1
                 noise = (noise + 1.0) / 2.0;
 
-                let index = ((x + range) * (range * 2) + (y + range)) as usize;
+                //y * columns + x;
+                let index = y * range + x;
     
                 // get gradient at index using short hand index
-                let g = gradient[index];
+                let g = gradient[index as usize];
                 noise -= g as f64;
     
                 let mut color: Color = BLUE;
@@ -83,18 +84,20 @@ fn generate_island(range: isize, gradient: &Vec<f32>) -> Vec<(Vec2, f64, Color)>
 fn generate_gradient(range: isize, padding: f32, power: f32) -> Vec<f32> {
     let mut gradient = Vec::new();
 
-    let range_perc = (range as f32 * padding) as isize;
+    let range_perc = range as f32 * padding;
 
-    for x in -range..range {
-        for y in -range..range {
+    let c = (range / 2) as f32;
+
+    for x in 0..range {
+        for y in 0..range {
             let x1 = x as f32;
             let y1 = y as f32;
             
-            // d is distance from 0,0 to x1, x2
-            let d = (x1 * x1 + y1 * y1).sqrt();
+            // d is distance from c,c to x1, x2
+            let d = ((x1 - c).powf(2.0) + (y1 - c).powf(2.0)).sqrt();
 
             // v is d / range at an exponential rate
-            let v = (d / (range - range_perc as isize) as f32).powf(power);
+            let v = (d / range_perc).powf(power);
 
             gradient.push(v);
         }
@@ -131,7 +134,7 @@ async fn main() {
     let mut zoom_factor = 0.005;
 
     let range = 500;
-    let padding = 0.2;
+    let padding = 0.3;
     let power = 1.5;
 
     let gradient = generate_gradient(range, padding, power);
@@ -143,22 +146,19 @@ async fn main() {
 
     let mut start_time = get_time();
 
-    let mut p = Vec2::new(0.0, 0.0);
-    let speed = 10.0;
+    let mut p = Vec2::new(range as f32 / 2.0, range as f32 / 2.0);
+    let speed = 1.0;
 
     loop {
         let frame_time = get_frame_time();
 
         if is_key_down(KeyCode::W) {
             p.y -= speed * frame_time;
-        }
-        if is_key_down(KeyCode::S) {
+        } else if is_key_down(KeyCode::S) {
             p.y += speed * frame_time;
-        }
-        if is_key_down(KeyCode::A) {
+        } else if is_key_down(KeyCode::A) {
             p.x -= speed * frame_time;
-        }
-        if is_key_down(KeyCode::D) {
+        } else if is_key_down(KeyCode::D) {
             p.x += speed * frame_time;
         }
 
@@ -222,16 +222,16 @@ async fn main() {
         draw_rectangle(land1.x, land1.y, 5.0, 5.0, RED);
         draw_rectangle(land2.x, land2.y, 5.0, 5.0, RED);
 
-        draw_rectangle_lines(-range as f32, -range as f32, (range*2) as f32, (range*2) as f32, 2.0, WHITE);
+        draw_rectangle_lines(0.0, 0.0, range as f32, range as f32, 2.0, WHITE);
 
         //if elapsed time is greater than 5 seconds
-        if get_time() - start_time > 5.0 {
-            start_time = get_time();
-            grid = generate_island(range, &gradient);
-            points = random_on_land(&grid, 2).unwrap();
-            land1 = points.remove(0);
-            land2 = points.remove(0);
-        }
+        // if get_time() - start_time > 5.0 {
+        //     start_time = get_time();
+        //     grid = generate_island(range, &gradient);
+        //     points = random_on_land(&grid, 2).unwrap();
+        //     land1 = points.remove(0);
+        //     land2 = points.remove(0);
+        // }
 
         next_frame().await;
     }

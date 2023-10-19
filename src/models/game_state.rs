@@ -21,5 +21,4 @@ pub struct GameState {
     pub font: Font,
     pub player: Player,
     pub creatures: Vec<Creature>,
-    pub entity_map: Grid<Vec<EntityRef>>,
 }

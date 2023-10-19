@@ -68,13 +68,13 @@ pub fn update(game_state: &mut GameState) {
     }
 
     // collide with world boundaries
-    let world = &game_state.world;
-    if let Some(boundary) = world.collide(&player.position) {
-        if let Some(ref mut animation) = player.animation {
-            player.position = animation.initial_pos;
-            player.animation = None;
-        }
-    }
+    // let world = &game_state.world;
+    // if let Some(boundary) = world.collide(&player.position) {
+    //     if let Some(ref mut animation) = player.animation {
+    //         player.position = animation.initial_pos;
+    //         player.animation = None;
+    //     }
+    // }
 
     // every 1 second, restore 1 energy to player
     if elapsed % 1.0 < 0.01 {

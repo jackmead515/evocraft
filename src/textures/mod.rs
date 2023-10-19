@@ -32,7 +32,9 @@ impl TextureMap {
             "dungeon/floor/floor_sand_stone_0",
             "dungeon/floor/limestone_0",
             "dungeon/floor/mud_0",
-            "misc/brands/top_right/sleeping"
+            "misc/brands/top_right/sleeping",
+            "dungeon/water/deep_water",
+            "dungeon/water/deep_water_2",
         ];
 
         for text_id in texture_list {
