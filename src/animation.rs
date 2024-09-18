@@ -1,7 +1,8 @@
 use macroquad::prelude::Vec2;
 
+
 #[derive(Debug, Clone)]
-pub struct AnimationTransition {
+pub struct AnimationMovement {
 
     /// global start position for the animation
     pub initial_pos: Vec2,
@@ -31,7 +32,9 @@ pub enum CurveType {
     EaseBounceOut
 }
 
-impl AnimationTransition {
+
+
+impl AnimationMovement {
 
     pub fn new(
         initial_pos: Vec2,
@@ -39,8 +42,8 @@ impl AnimationTransition {
         start_time: f64,
         duration: f32,
         curve_type: CurveType
-    ) -> AnimationTransition {
-        AnimationTransition {
+    ) -> AnimationMovement {
+        AnimationMovement {
             initial_pos,
             final_pos,
             start_time,

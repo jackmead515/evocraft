@@ -3,6 +3,7 @@ use macroquad::prelude::*;
 use crate::models::*;
 use crate::animation::*;
 use crate::consts;
+use crate::world::WORLD_WALL_LAYER;
 
 pub fn update(game_state: &mut GameState) {
     let player = &mut game_state.player;
@@ -14,7 +15,7 @@ pub fn update(game_state: &mut GameState) {
     if player.animation.is_none() {
         if is_key_down(KeyCode::D) {
             player.animation = Some(
-                AnimationTransition::new(
+                AnimationMovement::new(
                     player.position,
                     Vec2::new(player.position.x + 1.0, player.position.y),
                     elapsed, speed, CurveType::Linear
@@ -24,7 +25,7 @@ pub fn update(game_state: &mut GameState) {
 
         } else if is_key_down(KeyCode::A) {
             player.animation = Some(
-                    AnimationTransition::new(
+                AnimationMovement::new(
                     player.position,
                     Vec2::new(player.position.x - 1.0, player.position.y),
                     elapsed, speed, CurveType::Linear
@@ -34,7 +35,7 @@ pub fn update(game_state: &mut GameState) {
 
         } else if is_key_down(KeyCode::W) {
             player.animation = Some(
-                AnimationTransition::new(
+                AnimationMovement::new(
                     player.position,
                     Vec2::new(player.position.x, player.position.y - 1.0),
                     elapsed, speed, CurveType::Linear
@@ -44,7 +45,7 @@ pub fn update(game_state: &mut GameState) {
 
         } else if is_key_down(KeyCode::S) {
             player.animation = Some(
-                AnimationTransition::new(
+                AnimationMovement::new(
                     player.position,
                     Vec2::new(player.position.x, player.position.y + 1.0),
                     elapsed, speed, CurveType::Linear
@@ -67,9 +68,10 @@ pub fn update(game_state: &mut GameState) {
         None => {}
     }
 
-    // collide with world boundaries
+    //collide with world boundaries
     // let world = &game_state.world;
-    // if let Some(boundary) = world.collide(&player.position) {
+    // let search_box = Rect::new(player.position.x-10.0, player.position.y-10.0, player.position.x+10.0, player.position.y+10.0);
+    // if let Some(_) = world.collide_with(&player.position, &search_box, WORLD_WALL_LAYER) {
     //     if let Some(ref mut animation) = player.animation {
     //         player.position = animation.initial_pos;
     //         player.animation = None;

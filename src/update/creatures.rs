@@ -6,6 +6,7 @@ use crate::creature::*;
 use crate::models::*;
 use crate::animation::*;
 use crate::brain::*;
+use crate::util::delay::Delay;
 
 pub fn update_movement_animation(creature: &mut Creature, elapsed: f64) {
     if creature.movement.is_some() {
@@ -20,6 +21,7 @@ pub fn update_movement_animation(creature: &mut Creature, elapsed: f64) {
         creature.position = p;
     }
 }
+
 
 pub fn update_creature_behavior(creature: &mut Creature, player: &Player, elapsed: f64) {
     creature.behavior_brain.last_decision_time = elapsed;
@@ -89,24 +91,16 @@ pub fn update_creature_behavior(creature: &mut Creature, player: &Player, elapse
     let (_, output_type) = creature.behavior_brain.compute(brain_inputs);
 
     match output_type {
-        OutputTypes::BehaviorMove => {
-            creature.current_behavior = Some(OutputTypes::BehaviorMove);
-        },
-        OutputTypes::BehaviorRest => {
-            creature.current_behavior = Some(OutputTypes::BehaviorRest);
-            creature.energy.restore(5.0);
-        },
-        OutputTypes::BehaviorNothing => {
-            creature.current_behavior = Some(OutputTypes::BehaviorNothing);
-        },
         OutputTypes::BehaviorContinue => {
             // continue current behavior!
+            // meaning, don't change anything
         },
         _ => {
-            panic!("Unexpected output type");
+            creature.current_behavior = Some(output_type);
         }
     }
 }
+
 
 pub fn update_creature_current_behavior(creature: &mut Creature, player: &Player, elapsed: f64) {
     if let Some(behavior) = creature.current_behavior {
@@ -132,7 +126,7 @@ pub fn update_creature_current_behavior(creature: &mut Creature, player: &Player
     
                 if xmove != 0.0 || ymove != 0.0 {
                     if creature.energy.value >= 3.0 {
-                        creature.movement = Some(AnimationTransition::new(
+                        creature.movement = Some(AnimationMovement::new(
                             creature.position,
                             creature.position + Vec2::new(xmove, ymove),
                             elapsed, 0.4, CurveType::Linear
@@ -142,11 +136,33 @@ pub fn update_creature_current_behavior(creature: &mut Creature, player: &Player
                     }
                 }
     
-            }
+            },
+            OutputTypes::BehaviorNothing => {
+                if let Some(ref mut delay) = creature.delays.behavior_nothing {
+                    if delay.is_complete(elapsed) {
+                        creature.delays.behavior_nothing = None;
+                        creature.health.consume(1.0); // consume health while doing nothing
+                    }
+                } else {
+                    creature.delays.behavior_nothing = Some(Delay::new(elapsed, 1.0));
+                }
+            },
+            OutputTypes::BehaviorRest => {
+                if let Some(ref mut delay) = creature.delays.behavior_rest {
+                    if delay.is_complete(elapsed) {
+                        creature.delays.behavior_rest = None;
+                        creature.energy.restore(5.0);
+                        creature.health.consume(1.0);
+                    }
+                } else {
+                    creature.delays.behavior_rest = Some(Delay::new(elapsed, 3.0));
+                }
+            },
             _ => {}
         }
     }
 }
+
 
 pub fn update(game_state: &mut GameState) {
     let elapsed = game_state.stats.elapsed;
@@ -165,7 +181,6 @@ pub fn update(game_state: &mut GameState) {
         // update to creatures behavior
         } else if creature.movement.is_none() && creature.behavior_brain.can_decide(elapsed) {
             update_creature_behavior(creature, player, elapsed);
-    
         }
 
         // update the creatures current behavior
@@ -174,8 +189,8 @@ pub fn update(game_state: &mut GameState) {
         // restore creature energy every 1 second
         // if creature energy is less than 10, damage creature
         if elapsed % 1.0 < 0.01 {
-            creature.energy.restore(1.0);
-            creature.health.restore(1.0);
+            //creature.energy.restore(1.0);
+            //creature.health.restore(1.0);
 
             if creature.energy.value < 10.0 {
                 creature.health.consume(5.0);
@@ -195,9 +210,9 @@ pub fn update(game_state: &mut GameState) {
         }
 
         // if creature health is less than 0, creature should die
-        // if creature.health.value <= 0.0 {
-        //     creature.alive = false;
-        // }
+        if creature.health.value <= 0.0 {
+            creature.alive = false;
+        }
         
         // if creature is alive for more than 5 minutes, it should die
         // if elapsed - creature.birth_time >= 10.0 {

@@ -4,6 +4,8 @@ use macroquad::prelude::scene::camera_pos;
 use crate::consts;
 use crate::models::*;
 use crate::brain::*;
+use crate::world::WORLD_FLOOR_LAYER;
+use crate::world::WORLD_WALL_LAYER;
 
 pub fn draw_debug_grid(game_state: &GameState) {
     let player = &game_state.player;
@@ -64,7 +66,12 @@ pub fn draw(game_state: &GameState) {
 
     set_camera(camera);
 
-    for f in world.iter_floor(viewport) {
+    for f in world.iter_layer(WORLD_FLOOR_LAYER, viewport) {
+        if let Some(tile) = f {
+            draw_tile(&texture_map.get(&tile.texture), tile.position, Vec2::new(1.0, 1.0));
+        }
+    }
+    for f in world.iter_layer(WORLD_WALL_LAYER, viewport) {
         if let Some(tile) = f {
             draw_tile(&texture_map.get(&tile.texture), tile.position, Vec2::new(1.0, 1.0));
         }
@@ -86,6 +93,24 @@ pub fn draw(game_state: &GameState) {
                     _ => {}
                 }
             }
+
+            // draw creature health
+            let health_ratio = c.health.value / c.health.max;
+            let health_bar_width = 0.5;
+            let health_bar_height = 0.1;
+            let health_bar_x = c.position.x;
+            let health_bar_y = c.position.y - 0.1;
+            draw_rectangle(health_bar_x, health_bar_y, health_bar_width, health_bar_height, RED);
+            draw_rectangle(health_bar_x, health_bar_y, health_bar_width * health_ratio, health_bar_height, GREEN);
+
+            // draw creature energy
+            let energy_ratio = c.energy.value / c.energy.max;
+            let energy_bar_width = 0.5;
+            let energy_bar_height = 0.1;
+            let energy_bar_x = c.position.x;
+            let energy_bar_y = c.position.y;
+            draw_rectangle(energy_bar_x, energy_bar_y, energy_bar_width, energy_bar_height, RED);
+            draw_rectangle(energy_bar_x, energy_bar_y, energy_bar_width * energy_ratio, energy_bar_height, YELLOW);
         }
     }
 

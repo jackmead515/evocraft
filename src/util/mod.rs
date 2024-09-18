@@ -1,3 +1,5 @@
+pub mod delay;
+
 macro_rules! iterable_enum {
     ($visibility:vis, $name:ident, $($member:tt),*) => {
         $visibility enum $name {$($member),*}

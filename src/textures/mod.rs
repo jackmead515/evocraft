@@ -28,10 +28,48 @@ impl TextureMap {
             "dungeon/wall/brick_gray_1",
             "dungeon/wall/brick_gray_2",
             "dungeon/wall/brick_gray_3",
+            
+
+            // beach
+            "dungeon/floor/sand_1",
+            "dungeon/floor/sand_2",
+            "dungeon/floor/sand_3",
+            "dungeon/floor/sand_4",
+            "dungeon/floor/sand_5",
+            "dungeon/floor/sand_6",
+            "dungeon/floor/sand_7",
+            "dungeon/floor/sand_8",
+
             "dungeon/floor/dirt_0_new",
-            "dungeon/floor/floor_sand_stone_0",
-            "dungeon/floor/limestone_0",
+
+            // mountain
             "dungeon/floor/mud_0",
+            "dungeon/floor/mud_1",
+            "dungeon/floor/pebble_brown_0_new",
+            "dungeon/floor/pebble_brown_1_new",
+            "dungeon/floor/grey_dirt_0_new",
+            "dungeon/floor/grey_dirt_1_new",
+
+            "dungeon/floor/pebble_brown_2_new",
+            "dungeon/floor/pebble_brown_3_new",
+            "dungeon/floor/pebble_brown_4_new",
+            "dungeon/floor/pebble_brown_5_new",
+            "dungeon/floor/pebble_brown_6_new",
+            "dungeon/floor/pebble_brown_7_new",
+            "dungeon/floor/pebble_brown_8_new",
+
+            "dungeon/floor/limestone_0",
+            
+
+            "dungeon/trees/tree_1_lightred",
+            "dungeon/trees/tree_1_red",
+            "dungeon/trees/tree_1_yellow",
+            "dungeon/trees/tree_2_lightred",
+            "dungeon/trees/tree_2_red",
+            "dungeon/trees/tree_2_yellow",
+
+
+
             "misc/brands/top_right/sleeping",
             "dungeon/water/deep_water",
             "dungeon/water/deep_water_2",

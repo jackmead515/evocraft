@@ -45,7 +45,7 @@ async fn main() {
         let mut zoom_factor = game_state.stats.zoom_factor;
         let scroll = mouse_wheel().1;
         zoom_factor += scroll * 0.01;
-        zoom_factor = clamp(zoom_factor, 0.05, 0.1);
+        zoom_factor = clamp(zoom_factor, 0.0005, 0.1);
         game_state.stats.zoom_factor = zoom_factor;
 
         //demo::update(&mut game_state);
