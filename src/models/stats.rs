@@ -8,10 +8,23 @@ pub struct ZeroMaxStat {
 impl ZeroMaxStat {
 
     pub fn new(value: f32, max: f32) -> ZeroMaxStat {
+
+        if value > max {
+            panic!("Value cannot be greater than max");
+        }
+
         ZeroMaxStat {
             value: value,
             max: max
         }
+    }
+
+    pub fn invert_value(&self) -> f32 {
+        self.max - self.value
+    }
+
+    pub fn invert_percent(&self) -> f32 {
+        return 1.0 - self.percent();
     }
 
     pub fn percent(&self) -> f32 {

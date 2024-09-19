@@ -14,7 +14,8 @@ pub fn grid_pos(v: &Vec2) -> Vec2 {
     return Vec2::new(gx, gy);
 }
 
-pub fn normalize(v: &Vec2) -> Vec2 {
+/// Normalizes a grid position to a value between 0 and 1.
+pub fn normalize_grid_pos(v: &Vec2) -> Vec2 {
     let gx = v.x / GRID_WIDTH as f32;
     let gy = v.y / GRID_HEIGHT as f32;
     return Vec2::new(gx, gy);

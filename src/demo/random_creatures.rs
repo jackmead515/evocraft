@@ -48,19 +48,23 @@ pub async fn generate()  -> GameState {
             position: Vec2::new(250.0, 250.0),
             health: ZeroMaxStat::new(100.0, 100.0),
             energy: ZeroMaxStat::new(100.0, 100.0),
-            animation: None,
+            vigor: ZeroMaxStat::new(95.0, 100.0),
+            movement: None,
+            delays: PlayerDelays {
+                energy_restore: None
+            }
         },
         creatures: creatures,
     };
 }
 
 fn generate_random_creatures() -> Vec<Creature> {
-    let mut creatures = Vec::with_capacity(1000);
+    let mut creatures = Vec::with_capacity(100);
 
     let mut gx = 250;
     let mut gy = 250;
 
-    for _ in 0..500 {
+    for _ in 0..100 {
         let p = Vec2::new(gx as f32, gy as f32);
         let c = Creature::new_random(p, 100.0, 100.0, get_time());
         creatures.push(c);

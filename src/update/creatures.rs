@@ -4,21 +4,20 @@ use macroquad::rand::gen_range;
 use crate::consts;
 use crate::creature::*;
 use crate::models::*;
-use crate::animation::*;
 use crate::brain::*;
+use crate::util::animation::{AnimationMovement, CurveType};
 use crate::util::delay::Delay;
 
 pub fn update_movement_animation(creature: &mut Creature, elapsed: f64) {
-    if creature.movement.is_some() {
-        let a = creature.movement.as_ref().unwrap();
-        let p = a.interpolate(elapsed);
-        if a.is_complete(elapsed) {
-            creature.movement = None;
-            // snap creature to grid position
-            creature.position = consts::grid_pos(&creature.position);
-        }
-
-        creature.position = p;
+    match creature.movement {
+        Some(ref mut animation) => {
+            creature.position = animation.interpolate(elapsed);
+            if animation.is_complete(elapsed) {
+                creature.position = consts::grid_pos(&animation.final_pos);
+                creature.movement = None;
+            }
+        },
+        None => {}
     }
 }
 
@@ -57,12 +56,14 @@ pub fn update_creature_behavior(creature: &mut Creature, player: &Player, elapse
                 brain_inputs.push((elapsed / 10.0).sin() as f32);
             },
             InputTypes::CurrentPosition => {
-                let v = consts::normalize(&creature.position);
+                let gpos = consts::grid_pos(&creature.position);
+                let v = consts::normalize_grid_pos(&gpos);
                 brain_inputs.push(v.x);
                 brain_inputs.push(v.y);
             },
             InputTypes::PlayerPosition => {
-                let v = consts::normalize(&player.position);
+                let gpos = consts::grid_pos(&player.position);
+                let v = consts::normalize_grid_pos(&gpos);
                 brain_inputs.push(v.x);
                 brain_inputs.push(v.y);
             },
@@ -76,9 +77,7 @@ pub fn update_creature_behavior(creature: &mut Creature, player: &Player, elapse
                 brain_inputs.push(player.energy.percent());
             },
             InputTypes::PlayerHealth => {
-                let mut h = player.health.value;
-                h = (h / player.health.max) * 2.0 - 1.0;
-                brain_inputs.push(h);
+                brain_inputs.push(player.health.percent());
             },
             // InputTypes::NearCreatures => {
             //     // TODO: implement this

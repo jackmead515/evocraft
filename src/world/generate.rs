@@ -99,24 +99,29 @@ pub fn generate_random_world() -> World {
 
 
     // generate the mountain grid;
-    let mountain_size = 250;
-    let mut mountain = generate_noise(mountain_size, mountain_seed, 5, 1.0);
-    let mountain_gradient = generate_circular_gradient(mountain_size, 0.3, 1.5, 20.0);
-    mountain.par_iter_mut().enumerate().for_each(|(index, (pos, noise))| {
-        let g = mountain_gradient[index];
-        *noise -= g as f64;
-        *noise = noise.max(0.0);
-        pos.x += grid_size as f32 / 2.0 - (mountain_size / 2) as f32;
-        pos.y += grid_size as f32 / 2.0 - (mountain_size / 2) as f32;
-    });
-    std::mem::drop(mountain_gradient);
+    // let mountain_size = 250;
+    // let mut mountain = generate_noise(mountain_size, mountain_seed, 5, 1.0);
+    // let mountain_gradient = generate_circular_gradient(mountain_size, 0.3, 1.5, 20.0);
+    // mountain.par_iter_mut().enumerate().for_each(|(index, (pos, noise))| {
+    //     let g = mountain_gradient[index];
+    //     *noise -= g as f64;
+    //     *noise = noise.max(0.0);
+    //     pos.x += grid_size as f32 / 2.0 - (mountain_size / 2) as f32;
+    //     pos.y += grid_size as f32 / 2.0 - (mountain_size / 2) as f32;
+    // });
+    // std::mem::drop(mountain_gradient);
 
     // initialize the island as grass and water tiles
     for (pos, noise) in island {
         let mut tile = "dungeon/floor/grass/grass0-dirt-mix_1";
-    
+
         if noise < water_threshold {
             tile = "dungeon/water/deep_water";
+            world.tile_grid[pos.x as usize][pos.y as usize][WORLD_WALL_LAYER] = Some(TileSet {
+                position: pos,
+                texture: tile.to_string(),
+                elevation: 0.0,
+            });
         }
 
         world.tile_grid[pos.x as usize][pos.y as usize][WORLD_FLOOR_LAYER] = Some(TileSet {
@@ -127,27 +132,27 @@ pub fn generate_random_world() -> World {
     }
 
     // initialize the mountain as dirt tiles
-    let mountain_tiles = [
-        ("dungeon/floor/mud_0", 0.6),
-        ("dungeon/floor/mud_1", 0.65),
-        ("dungeon/floor/pebble_brown_0_new", 0.7),
-        ("dungeon/floor/pebble_brown_1_new", 0.75),
-        ("dungeon/floor/grey_dirt_0_new", 0.8),
-        ("dungeon/floor/grey_dirt_1_new", 0.85),
-    ];
+    // let mountain_tiles = [
+    //     ("dungeon/floor/mud_0", 0.6),
+    //     ("dungeon/floor/mud_1", 0.65),
+    //     ("dungeon/floor/pebble_brown_0_new", 0.7),
+    //     ("dungeon/floor/pebble_brown_1_new", 0.75),
+    //     ("dungeon/floor/grey_dirt_0_new", 0.8),
+    //     ("dungeon/floor/grey_dirt_1_new", 0.85),
+    // ];
 
-    for (pos, noise) in mountain {
-        for (tile, threshold) in mountain_tiles.iter() {
-            if noise > *threshold {
-                world.tile_grid[pos.x as usize][pos.y as usize][WORLD_FLOOR_LAYER] = Some(TileSet {
-                    position: pos,
-                    texture: tile.to_string(),
-                    elevation: 0.0,
-                });
-                break;
-            }
-        }
-    }
+    // for (pos, noise) in mountain {
+    //     for (tile, threshold) in mountain_tiles.iter() {
+    //         if noise > *threshold {
+    //             world.tile_grid[pos.x as usize][pos.y as usize][WORLD_FLOOR_LAYER] = Some(TileSet {
+    //                 position: pos,
+    //                 texture: tile.to_string(),
+    //                 elevation: 0.0,
+    //             });
+    //             break;
+    //         }
+    //     }
+    // }
 
 
     // loop through the grid and set beach tiles. If a tile is surrounded by water tiles set it to a beach tile

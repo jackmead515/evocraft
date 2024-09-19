@@ -53,25 +53,14 @@ impl World {
         });
     }
 
-    pub fn collide_with(&self, position: &Vec2, search: &Rect, layer: usize) -> Option<&TileSet> {
-        let pos_box = Rect::new(position.x, position.y, 1.0, 1.0);
+    pub fn collide_with(&self, grid_position: &Vec2, layer: usize) -> Option<&TileSet> {
+        let x = grid_position.x as usize;
+        let y = grid_position.y as usize;
 
-        for x in search.left() as usize..search.right() as usize {
-            for y in search.top() as usize..search.bottom() as usize {
-                if let Some(tile) = &self.tile_grid[x][y][layer] {
-                    let bod_box = Rect::new(tile.position.x, tile.position.y, 1.0, 1.0);
-
-                    if pos_box.left() < bod_box.right()
-                    && pos_box.right() > bod_box.left()
-                    && pos_box.top() < bod_box.bottom()
-                    && pos_box.bottom() > bod_box.top() {
-                        return Some(&tile);
-                    }
-                }
-            }
+        if let Some(tile) = &self.tile_grid[x][y][layer] {
+            return Some(&tile);
         }
 
         return None;
     }
-
 }

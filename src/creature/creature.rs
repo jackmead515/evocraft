@@ -3,13 +3,14 @@ use macroquad::prelude::Vec2;
 
 use crate::brain::{Brain, BrainInputTypes, OutputTypes};
 use crate::models::ZeroMaxStat;
-use crate::animation::AnimationMovement;
+use crate::util::animation::AnimationMovement;
 use crate::util::delay::Delay;
 
 #[derive(Debug, Clone)]
 pub struct CreatureDelays {
     pub behavior_nothing: Option<Delay>,
     pub behavior_rest: Option<Delay>,
+    pub energy_restore: Option<Delay>,
 }
 
 #[derive(Debug, Clone)]
@@ -34,6 +35,7 @@ impl Creature {
             current_behavior: None,
             movement: None,
             delays: CreatureDelays {
+                energy_restore: None,
                 behavior_nothing: None,
                 behavior_rest: None,
             },

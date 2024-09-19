@@ -1,4 +1,5 @@
 pub mod delay;
+pub mod animation;
 
 macro_rules! iterable_enum {
     ($visibility:vis, $name:ident, $($member:tt),*) => {
