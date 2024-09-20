@@ -136,22 +136,11 @@ pub fn update_creature_current_behavior(creature: &mut Creature, player: &Player
                 }
     
             },
-            OutputTypes::BehaviorNothing => {
-                if let Some(ref mut delay) = creature.delays.behavior_nothing {
-                    if delay.is_complete(elapsed) {
-                        creature.delays.behavior_nothing = None;
-                        creature.health.consume(1.0); // consume health while doing nothing
-                    }
-                } else {
-                    creature.delays.behavior_nothing = Some(Delay::new(elapsed, 1.0));
-                }
-            },
             OutputTypes::BehaviorRest => {
                 if let Some(ref mut delay) = creature.delays.behavior_rest {
                     if delay.is_complete(elapsed) {
                         creature.delays.behavior_rest = None;
                         creature.energy.restore(5.0);
-                        creature.health.consume(1.0);
                     }
                 } else {
                     creature.delays.behavior_rest = Some(Delay::new(elapsed, 3.0));
@@ -188,8 +177,7 @@ pub fn update(game_state: &mut GameState) {
         // restore creature energy every 1 second
         // if creature energy is less than 10, damage creature
         if elapsed % 1.0 < 0.01 {
-            //creature.energy.restore(1.0);
-            //creature.health.restore(1.0);
+            creature.health.consume(0.5);
 
             if creature.energy.value < 10.0 {
                 creature.health.consume(5.0);

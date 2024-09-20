@@ -104,6 +104,8 @@ pub fn update(game_state: &mut GameState) {
 
     // every 1 second, restore 1 energy to player
     if elapsed % 1.0 < 0.01 {
+        player.health.consume(0.5);
+
         if player.energy.value < 10.0 {
             player.health.consume(5.0);
         }

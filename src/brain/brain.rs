@@ -16,6 +16,8 @@ pub struct Brain {
     pub last_decisions: Vec<OutputTypes>,
     pub last_decision_time: f64,
     pub decision_speed: f32,
+    hidden_buffer: Vec<f32>,
+    output_buffer: Vec<f32>,
 }
 
 
@@ -143,6 +145,12 @@ impl Brain {
             output_neurons.push(Neuron::new(ActivationFunction::from(activation), bias, weights));
         }
 
+        let mut hidden_buffer = Vec::with_capacity(hidden_neurons.len());
+        hidden_buffer.resize(hidden_neurons.len(), 0.0);
+
+        let mut output_buffer = Vec::with_capacity(output_neurons.len());
+        output_buffer.resize(output_neurons.len(), 0.0);
+
         return Brain {
             brain_type: input,
             input_types: input_options,
@@ -153,6 +161,8 @@ impl Brain {
             last_decisions: Vec::new(),
             last_decision_time: 0.0,
             decision_speed: decision_speed,
+            hidden_buffer: hidden_buffer,
+            output_buffer: output_buffer,
         };
     }
 
@@ -161,17 +171,17 @@ impl Brain {
         let hidden_size = self.hidden_neurons.len();
         let output_size = self.output_neurons.len();
 
-        let mut hidden_buffer = Vec::with_capacity(hidden_size);
-        let mut output_buffer = Vec::with_capacity(output_size);
+        //let mut hidden_buffer = Vec::with_capacity(hidden_size);
+        //let mut output_buffer = Vec::with_capacity(output_size);
 
         // compute the hidden neurons
         for i in 0..hidden_size {
-            hidden_buffer.push(self.hidden_neurons[i].compute(&inputs));
+            self.hidden_buffer[i] = self.hidden_neurons[i].compute(&inputs);
         }
 
         // compute the output neurons
         for i in 0..output_size {
-            output_buffer.push(self.output_neurons[i].compute(&hidden_buffer));
+            self.output_buffer[i] = self.output_neurons[i].compute(&self.hidden_buffer)
         }
 
         // compute the softmax decision!!
@@ -181,7 +191,7 @@ impl Brain {
         // compute the natural exponential
         // and the sum of the exponentials
         // at the same time
-        for output in output_buffer.iter() {
+        for output in self.output_buffer.iter() {
             let exp = output.exp();
             exp_sum += exp;
             exps.push(exp);
@@ -190,7 +200,7 @@ impl Brain {
         let mut max = 0.0;
         let mut max_index: u8 = 0;
         let mut outputs = Vec::with_capacity(output_size);
-        for i in 0..output_buffer.len() {
+        for i in 0..self.output_buffer.len() {
             // output of softmax is = exp / sum(exp)
             let output = exps[i] / exp_sum;
 

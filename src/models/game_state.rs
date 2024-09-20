@@ -1,5 +1,4 @@
 use macroquad::prelude::Font;
-use grid::Grid;
 
 use crate::world::World;
 use crate::creature::Creature;
@@ -20,5 +19,6 @@ pub struct GameState {
     pub stats: GameStats,
     pub font: Font,
     pub player: Player,
+    //pub creature_map: CreatureMap,
     pub creatures: Vec<Creature>,
 }

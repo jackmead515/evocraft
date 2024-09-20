@@ -8,7 +8,6 @@ use crate::util::delay::Delay;
 
 #[derive(Debug, Clone)]
 pub struct CreatureDelays {
-    pub behavior_nothing: Option<Delay>,
     pub behavior_rest: Option<Delay>,
     pub energy_restore: Option<Delay>,
 }
@@ -36,7 +35,6 @@ impl Creature {
             movement: None,
             delays: CreatureDelays {
                 energy_restore: None,
-                behavior_nothing: None,
                 behavior_rest: None,
             },
             health: ZeroMaxStat::new(health, health),

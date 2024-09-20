@@ -135,10 +135,6 @@ pub fn draw(game_state: &GameState) {
 
     // draw mouse position
     draw_rectangle_lines(mouse_gpos.x, mouse_gpos.y, 1.0, 1.0, 0.05, Color::new(1.0, 1.0, 1.0, 0.5));
-    //draw_circle_lines(mouse_gpos.x, mouse_gpos.y, 0.5, 0.05, Color::new(1.0, 1.0, 1.0, 0.5));
-    
-    // draw circle at mouse position
-    draw_circle_lines(mouse_wpos.x, mouse_wpos.y, 0.5, 0.05, GREEN);
 
 
     set_default_camera();
