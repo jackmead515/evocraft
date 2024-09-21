@@ -1,7 +1,7 @@
 use macroquad::rand::gen_range;
 use macroquad::prelude::Vec2;
 
-use crate::brain::{Brain, BrainInputTypes, OutputTypes};
+use crate::creature::*;
 use crate::models::ZeroMaxStat;
 use crate::util::animation::AnimationMovement;
 use crate::util::delay::Delay;
@@ -15,7 +15,7 @@ pub struct CreatureDelays {
 #[derive(Debug, Clone)]
 pub struct Creature {
     pub position: Vec2,
-    pub behavior_brain: Brain,
+    pub brain: Brain,
     pub current_behavior: Option<OutputTypes>,
     pub movement: Option<AnimationMovement>,
     pub delays: CreatureDelays,
@@ -30,7 +30,7 @@ impl Creature {
     pub fn new_random(position: Vec2, health: f32, energy: f32, birth_time: f64) -> Self {
         return Creature {
             position: position,
-            behavior_brain: Brain::random(BrainInputTypes::Behavior, 2.0),
+            brain: Brain::random(2.0),
             current_behavior: None,
             movement: None,
             delays: CreatureDelays {

@@ -7,14 +7,12 @@ pub mod consts;
 pub mod util;
 pub mod draw;
 pub mod update;
-pub mod genes;
 pub mod models;
 pub mod creature;
 pub mod grid_map;
 pub mod textures;
 pub mod world;
 pub mod demo;
-pub mod brain;
 
 use consts::*;
 use models::*;
@@ -26,6 +24,7 @@ fn window_conf() -> Conf {
         window_height: SCREEN_HEIGHT as i32,
         window_width: SCREEN_WIDTH as i32,
         window_resizable: false,
+        high_dpi: true,
         ..Default::default()
     }
 }

@@ -1,9 +1,8 @@
 use macroquad::prelude::Font;
 
-use crate::world::World;
 use crate::creature::Creature;
-use crate::models::*;
 use crate::textures::TextureMap;
+use crate::models::*;
 
 pub struct GameStats {
     pub fps: i32,
@@ -19,6 +18,6 @@ pub struct GameState {
     pub stats: GameStats,
     pub font: Font,
     pub player: Player,
-    //pub creature_map: CreatureMap,
     pub creatures: Vec<Creature>,
+    //pub creature_map: CreatureMap,
 }

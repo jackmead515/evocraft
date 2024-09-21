@@ -1,22 +1,8 @@
 use grid::Grid;
-
 use macroquad::prelude::*;
 
-pub const WORLD_LAYERS: usize = 3;
-pub const WORLD_FLOOR_LAYER: usize = 0;
-pub const WORLD_WALL_LAYER: usize = 1;
-pub const WORLD_WATER_LAYER: usize = 2;
-
-#[derive(Debug, Clone)]
-pub struct TileSet {
-    pub position: Vec2,
-    pub texture: String,
-    pub elevation: f32,
-}
-
-pub struct World {
-    pub tile_grid: Grid<Vec<Option<TileSet>>>,
-}
+use crate::models::{World, TileSet};
+use crate::consts::*;
 
 impl World {
 

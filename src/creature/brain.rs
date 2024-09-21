@@ -2,12 +2,11 @@ use macroquad::rand::gen_range;
 use macroquad::prelude::*;
 
 use crate::util;
-use crate::brain::io::*;
+use crate::creature::*;
 
 
 #[derive(Debug, Clone)]
 pub struct Brain {
-    pub brain_type: BrainInputTypes,
     pub input_types: Vec<InputTypes>,
     pub output_types: Vec<OutputTypes>,
     pub hidden_neurons: Vec<Neuron>,
@@ -76,7 +75,7 @@ impl Neuron {
         }
     }
 
-    /// Computes the sigmoid output total given the input vector
+    // compute the output of the neuron with the given activation function
     pub fn compute(&self, inputs: &Vec<f32>) -> f32 {
         let mut total = 0.0;
 
@@ -110,10 +109,10 @@ impl Neuron {
 
 impl Brain {
 
-    pub fn random(input: BrainInputTypes, decision_speed: f32) -> Brain {
+    pub fn random(decision_speed: f32) -> Brain {
 
-        let input_options = input.get_inputs();
-        let output_options = input.get_outputs();
+        let input_options = InputTypes::get_inputs();
+        let output_options = OutputTypes::get_outputs();
 
         let total_inputs = input_options.iter().map(|x| InputTypes::total_inputs(x)).sum();
         let total_hidden = gen_range(1, 30);
@@ -152,7 +151,6 @@ impl Brain {
         output_buffer.resize(output_neurons.len(), 0.0);
 
         return Brain {
-            brain_type: input,
             input_types: input_options,
             hidden_neurons: hidden_neurons,
             output_types: output_options,
@@ -170,9 +168,6 @@ impl Brain {
     pub fn compute(&mut self, inputs: Vec<f32>) -> (Vec<f32>, OutputTypes) {
         let hidden_size = self.hidden_neurons.len();
         let output_size = self.output_neurons.len();
-
-        //let mut hidden_buffer = Vec::with_capacity(hidden_size);
-        //let mut output_buffer = Vec::with_capacity(output_size);
 
         // compute the hidden neurons
         for i in 0..hidden_size {

@@ -4,7 +4,6 @@ use crate::models::*;
 use crate::util::animation::{AnimationMovement, CurveType};
 use crate::consts;
 use crate::util::delay::Delay;
-use crate::world::WORLD_WALL_LAYER;
 
 pub fn update(game_state: &mut GameState) {
     let player = &mut game_state.player;
@@ -19,7 +18,7 @@ pub fn update(game_state: &mut GameState) {
             let final_pos = Vec2::new(player.position.x + 1.0, player.position.y);
             let fgrid_pos = consts::grid_pos(&final_pos);
 
-            if player.energy.value > 3.0 && world.collide_with(&fgrid_pos, WORLD_WALL_LAYER).is_none() {
+            if player.energy.value > 3.0 && world.collide_with(&fgrid_pos, consts::WORLD_WALL_LAYER).is_none() {
                 player.movement = Some(
                     AnimationMovement::new(
                         player.position,
@@ -33,7 +32,7 @@ pub fn update(game_state: &mut GameState) {
             let final_pos = Vec2::new(player.position.x - 1.0, player.position.y);
             let fgrid_pos = consts::grid_pos(&final_pos);
 
-            if player.energy.value > 3.0 && world.collide_with(&fgrid_pos, WORLD_WALL_LAYER).is_none() {
+            if player.energy.value > 3.0 && world.collide_with(&fgrid_pos, consts::WORLD_WALL_LAYER).is_none() {
                 player.movement = Some(
                     AnimationMovement::new(
                         player.position,
@@ -48,7 +47,7 @@ pub fn update(game_state: &mut GameState) {
             let final_pos = Vec2::new(player.position.x, player.position.y - 1.0);
             let fgrid_pos = consts::grid_pos(&final_pos);
 
-            if player.energy.value > 3.0 && world.collide_with(&fgrid_pos, WORLD_WALL_LAYER).is_none() {
+            if player.energy.value > 3.0 && world.collide_with(&fgrid_pos, consts::WORLD_WALL_LAYER).is_none() {
                 player.movement = Some(
                     AnimationMovement::new(
                         player.position,
@@ -63,7 +62,7 @@ pub fn update(game_state: &mut GameState) {
             let final_pos = Vec2::new(player.position.x, player.position.y + 1.0);
             let fgrid_pos = consts::grid_pos(&final_pos);
 
-            if player.energy.value > 3.0 && world.collide_with(&fgrid_pos, WORLD_WALL_LAYER).is_none() {
+            if player.energy.value > 3.0 && world.collide_with(&fgrid_pos, consts::WORLD_WALL_LAYER).is_none() {
                 player.movement = Some(
                     AnimationMovement::new(
                         player.position,

@@ -3,7 +3,8 @@ use macroquad::prelude::*;
 use perlin2d::PerlinNoise2D;
 use::rand::random;
 
-use crate::world::*;
+use crate::models::*;
+use crate::consts::*;
 
 /// Generates a circular gradient grid. The center of the grid will be closer to 0 and the
 /// outside edges will be closer to 1.

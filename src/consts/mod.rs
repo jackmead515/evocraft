@@ -6,6 +6,11 @@ pub const GRID_WIDTH: u32 = 100;
 pub const GRID_HEIGHT: u32 = 100;
 pub const TILE_SIZE: f32 = 32.0;
 
+pub const WORLD_LAYERS: usize = 3;
+pub const WORLD_FLOOR_LAYER: usize = 0;
+pub const WORLD_WALL_LAYER: usize = 1;
+pub const WORLD_WATER_LAYER: usize = 2;
+
 /// Returns the grid position of a given x and y coordinate.
 /// x and y are assumed to be in screen coordinates.
 pub fn grid_pos(v: &Vec2) -> Vec2 {

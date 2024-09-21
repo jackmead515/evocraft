@@ -3,9 +3,7 @@ use macroquad::prelude::scene::camera_pos;
 
 use crate::consts;
 use crate::models::*;
-use crate::brain::*;
-use crate::world::WORLD_FLOOR_LAYER;
-use crate::world::WORLD_WALL_LAYER;
+use crate::creature::OutputTypes;
 
 pub fn draw_debug_grid(game_state: &GameState) {
     let player = &game_state.player;
@@ -71,12 +69,12 @@ pub fn draw(game_state: &GameState) {
 
     set_camera(camera);
 
-    for f in world.iter_layer(WORLD_FLOOR_LAYER, viewport) {
+    for f in world.iter_layer(consts::WORLD_FLOOR_LAYER, viewport) {
         if let Some(tile) = f {
             draw_tile(&texture_map.get(&tile.texture), tile.position, Vec2::new(1.0, 1.0));
         }
     }
-    for f in world.iter_layer(WORLD_WALL_LAYER, viewport) {
+    for f in world.iter_layer(consts::WORLD_WALL_LAYER, viewport) {
         if let Some(tile) = f {
             draw_tile(&texture_map.get(&tile.texture), tile.position, Vec2::new(1.0, 1.0));
         }

@@ -4,7 +4,6 @@ use macroquad::rand::gen_range;
 use crate::consts;
 use crate::creature::*;
 use crate::models::*;
-use crate::brain::*;
 use crate::util::animation::{AnimationMovement, CurveType};
 use crate::util::delay::Delay;
 
@@ -23,12 +22,12 @@ pub fn update_movement_animation(creature: &mut Creature, elapsed: f64) {
 
 
 pub fn update_creature_behavior(creature: &mut Creature, player: &Player, elapsed: f64) {
-    creature.behavior_brain.last_decision_time = elapsed;
+    creature.brain.last_decision_time = elapsed;
 
     let mut brain_inputs = Vec::new();
 
     // gather only the indicies that the brain needs
-    for input_type in &creature.behavior_brain.input_types {
+    for input_type in &creature.brain.input_types {
 
         match input_type {
             InputTypes::CurrentAge => {
@@ -37,11 +36,11 @@ pub fn update_creature_behavior(creature: &mut Creature, player: &Player, elapse
                 brain_inputs.push(age as f32);
             },
             InputTypes::LastDecisions => {
-                let total_decisions = creature.behavior_brain.last_decisions.len();
-                let max_decisions = creature.behavior_brain.output_types.len();
+                let total_decisions = creature.brain.last_decisions.len();
+                let max_decisions = creature.brain.output_types.len();
                 for i in 0..InputTypes::total_inputs(&InputTypes::LastDecisions) {
                     if i < total_decisions {
-                        let mut d = creature.behavior_brain.last_decisions[i] as u8 as f32;
+                        let mut d = creature.brain.last_decisions[i] as u8 as f32;
                         d = (d / max_decisions as f32) * 2.0 - 1.0;
                         brain_inputs.push(d);
                     } else {
@@ -87,7 +86,7 @@ pub fn update_creature_behavior(creature: &mut Creature, player: &Player, elapse
 
     }
 
-    let (_, output_type) = creature.behavior_brain.compute(brain_inputs);
+    let (_, output_type) = creature.brain.compute(brain_inputs);
 
     match output_type {
         OutputTypes::BehaviorContinue => {
@@ -104,7 +103,7 @@ pub fn update_creature_behavior(creature: &mut Creature, player: &Player, elapse
 pub fn update_creature_current_behavior(creature: &mut Creature, player: &Player, elapsed: f64) {
     if let Some(behavior) = creature.current_behavior {
         match behavior {
-            OutputTypes::BehaviorMove => {
+            OutputTypes::BehaviorWander => {
                 if creature.movement.is_some() {
                     return;
                 }
@@ -167,7 +166,7 @@ pub fn update(game_state: &mut GameState) {
             update_movement_animation(creature, elapsed);
 
         // update to creatures behavior
-        } else if creature.movement.is_none() && creature.behavior_brain.can_decide(elapsed) {
+        } else if creature.movement.is_none() && creature.brain.can_decide(elapsed) {
             update_creature_behavior(creature, player, elapsed);
         }
 
