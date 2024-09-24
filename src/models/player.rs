@@ -9,7 +9,6 @@ pub struct PlayerDelays {
 }
 
 pub struct Player {
-    pub text: &'static str,
     pub color: Color,
     pub position: Vec2,
     pub movement: Option<AnimationMovement>,

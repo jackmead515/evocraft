@@ -2,8 +2,7 @@ use macroquad::prelude::Vec2;
 
 pub const SCREEN_WIDTH: u32 = 1920;
 pub const SCREEN_HEIGHT: u32 = 1080;
-pub const GRID_WIDTH: u32 = 100;
-pub const GRID_HEIGHT: u32 = 100;
+pub const GRID_SIZE: usize = 500;
 pub const TILE_SIZE: f32 = 32.0;
 
 pub const WORLD_LAYERS: usize = 3;
@@ -21,7 +20,7 @@ pub fn grid_pos(v: &Vec2) -> Vec2 {
 
 /// Normalizes a grid position to a value between 0 and 1.
 pub fn normalize_grid_pos(v: &Vec2) -> Vec2 {
-    let gx = v.x / GRID_WIDTH as f32;
-    let gy = v.y / GRID_HEIGHT as f32;
+    let gx = v.x / GRID_SIZE as f32;
+    let gy = v.y / GRID_SIZE as f32;
     return Vec2::new(gx, gy);
 }

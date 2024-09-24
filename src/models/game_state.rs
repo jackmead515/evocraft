@@ -17,7 +17,4 @@ pub struct GameState {
     pub world: World,
     pub stats: GameStats,
     pub font: Font,
-    pub player: Player,
-    pub creatures: Vec<Creature>,
-    //pub creature_map: CreatureMap,
 }

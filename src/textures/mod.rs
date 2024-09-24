@@ -12,7 +12,7 @@ pub struct TextureMap {
 
 impl TextureMap {
 
-    pub async fn load() -> TextureMap {
+    pub async fn new() -> TextureMap {
 
         let mut textures = HashMap::new();
 
@@ -92,7 +92,7 @@ impl TextureMap {
 
 
 pub async fn load() -> TextureMap {
-    let texture_map = TextureMap::load().await;
+    let texture_map = TextureMap::new().await;
 
     build_textures_atlas();
 

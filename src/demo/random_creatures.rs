@@ -24,12 +24,26 @@ pub fn update(game_state: &mut GameState) {
 pub async fn generate()  -> GameState {
     let font = load_ttf_font("assets/unifont-15.0.06.ttf").await.expect("Failed to load font");
 
-    let creatures = generate_random_creatures();
-    //let mut clones = clone_creatures(&creatures);
-
     let texture_map = textures::load().await;
 
-    let world = generate_random_world();
+    let tile_grid = generate_random_world();
+    let creatures = generate_random_creatures();
+
+    let world = World {
+        tile_grid: tile_grid,
+        creatures: creatures,
+        player: Player {
+            color: Color::new(0.0, 1.0, 0.0, 1.0),
+            position: Vec2::new((GRID_SIZE / 2) as f32, (GRID_SIZE / 2) as f32),
+            health: ZeroMaxStat::new(100.0, 100.0),
+            energy: ZeroMaxStat::new(100.0, 100.0),
+            vigor: ZeroMaxStat::new(95.0, 100.0),
+            movement: None,
+            delays: PlayerDelays {
+                energy_restore: None
+            }
+        },
+    };
 
     return GameState {
         demo: DemoType::RandomCreatures1,
@@ -42,77 +56,25 @@ pub async fn generate()  -> GameState {
             zoom_factor: 0.05,
         },
         font: font,
-        player: Player {
-            text: "8",
-            color: Color::new(0.0, 1.0, 0.0, 1.0),
-            position: Vec2::new(250.0, 250.0),
-            health: ZeroMaxStat::new(100.0, 100.0),
-            energy: ZeroMaxStat::new(100.0, 100.0),
-            vigor: ZeroMaxStat::new(95.0, 100.0),
-            movement: None,
-            delays: PlayerDelays {
-                energy_restore: None
-            }
-        },
-        creatures: creatures,
     };
 }
 
 fn generate_random_creatures() -> Vec<Creature> {
     let mut creatures = Vec::with_capacity(100);
 
-    let mut gx = 250;
-    let mut gy = 250;
+    let mut gx = GRID_SIZE / 2;
+    let mut gy = GRID_SIZE / 2;
 
     for _ in 0..100 {
         let p = Vec2::new(gx as f32, gy as f32);
         let c = Creature::new_random(p, 100.0, 100.0, get_time());
         creatures.push(c);
         gx += 1;
-        if gx >= 300 {
-            gx = 250;
+        if gx >= GRID_SIZE {
+            gx = GRID_SIZE / 2;
             gy += 1;
         }
     }
 
     return creatures;
 }
-
-
-// fn gather_longest_survivers(clones: &mut Vec<Creature>) -> (Vec<Creature>, Grid<Vec<EntityRef>>) {
-//     let mut longest_survivers = Vec::new();
-//     let mut entity_map: Grid<Vec<EntityRef>> = grid::Grid::new((GRID_WIDTH + 1) as usize, (GRID_HEIGHT + 1) as usize);
-
-//     clones.sort_by(|a, b| b.birth_time.partial_cmp(&a.birth_time).unwrap());
-
-//     // select the first half of the creatures
-//     // and clone them. But clone them twice
-//     // to get original population size
-//     for i in 0..(clones.len() / 2) {
-//         let mut c1 = clones[i].clone();
-//         let mut c2 = clones[i].clone();
-//         c1.mutate();
-//         c2.mutate();
-//         longest_survivers.push(c1);
-//         longest_survivers.push(c2);
-//     }
-
-//     for i in 0..longest_survivers.len() {
-//         let survivor = &mut longest_survivers[i];
-//         let (gx, gy) = grid_pos(survivor.position.x, survivor.position.y);
-//         let entity_ref = EntityRef::new(EntityType::Creature, i, gx, gy);
-//         entity_map[gx as usize][gy as usize].push(entity_ref);
-//     }
-
-
-//     return (longest_survivers, entity_map);
-// }
-
-
-// fn clone_creatures(creatures: &Vec<Creature>) -> Vec<Creature> {
-//     let mut clones = Vec::new();
-//     for c in creatures {
-//         clones.push(c.clone());
-//     }
-//     return clones;
-// }

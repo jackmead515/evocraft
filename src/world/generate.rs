@@ -1,3 +1,4 @@
+use grid::Grid;
 use rayon::prelude::*;
 use macroquad::prelude::*;
 use perlin2d::PerlinNoise2D;
@@ -78,19 +79,18 @@ pub fn generate_noise(range: usize, seed: i16, octaves: i32, amplitude: f64) -> 
 }
 
 
-pub fn generate_random_world() -> World {
+pub fn generate_random_world() -> Grid<Vec<Option<TileSet>>> {
     let water_threshold = 0.15;
-    let grid_size = 500;
 
-    let mut world = World::new(grid_size, grid_size);
+    let stack: Vec<Option<TileSet>> = vec![None; WORLD_LAYERS];
+    let mut tile_grid: Grid<Vec<Option<TileSet>>> = Grid::new(GRID_SIZE, GRID_SIZE);
+    tile_grid.fill(stack);
 
     let island_seed = random::<i16>();
-    let mountain_seed = random::<i16>();
-
 
     // generate the island grid;
-    let mut island = generate_noise(grid_size, island_seed, 5, 1.0);
-    let island_gradient = generate_circular_gradient(grid_size, 0.3, 1.5, 0.0);
+    let mut island = generate_noise(GRID_SIZE, island_seed, 5, 1.0);
+    let island_gradient = generate_circular_gradient(GRID_SIZE, 0.3, 1.5, 0.0);
     island.par_iter_mut().enumerate().for_each(|(index, (pos, noise))| {
         let g = island_gradient[index];
         *noise -= g as f64;
@@ -100,6 +100,7 @@ pub fn generate_random_world() -> World {
 
 
     // generate the mountain grid;
+    // let mountain_seed = random::<i16>();
     // let mountain_size = 250;
     // let mut mountain = generate_noise(mountain_size, mountain_seed, 5, 1.0);
     // let mountain_gradient = generate_circular_gradient(mountain_size, 0.3, 1.5, 20.0);
@@ -118,14 +119,14 @@ pub fn generate_random_world() -> World {
 
         if noise < water_threshold {
             tile = "dungeon/water/deep_water";
-            world.tile_grid[pos.x as usize][pos.y as usize][WORLD_WALL_LAYER] = Some(TileSet {
+            tile_grid[pos.x as usize][pos.y as usize][WORLD_WALL_LAYER] = Some(TileSet {
                 position: pos,
                 texture: tile.to_string(),
                 elevation: 0.0,
             });
         }
 
-        world.tile_grid[pos.x as usize][pos.y as usize][WORLD_FLOOR_LAYER] = Some(TileSet {
+        tile_grid[pos.x as usize][pos.y as usize][WORLD_FLOOR_LAYER] = Some(TileSet {
             position: pos,
             texture: tile.to_string(),
             elevation: 0.0,
@@ -157,9 +158,9 @@ pub fn generate_random_world() -> World {
 
 
     // loop through the grid and set beach tiles. If a tile is surrounded by water tiles set it to a beach tile
-    for x in 0..grid_size {
-        for y in 0..grid_size {
-            if let Some(tile) = world.tile_grid[x][y][WORLD_FLOOR_LAYER].as_ref() {
+    for x in 0..GRID_SIZE {
+        for y in 0..GRID_SIZE {
+            if let Some(tile) = tile_grid[x][y][WORLD_FLOOR_LAYER].as_ref() {
                 if tile.texture == "dungeon/floor/grass/grass0-dirt-mix_1" {
                     // check the surrounding tiles
                     let mut set_to_beach = false;
@@ -168,11 +169,11 @@ pub fn generate_random_world() -> World {
                             let nx = x as i32 + dx;
                             let ny = y as i32 + dy;
 
-                            if nx < 0 || ny < 0 || nx >= grid_size as i32 || ny >= grid_size as i32 {
+                            if nx < 0 || ny < 0 || nx >= GRID_SIZE as i32 || ny >= GRID_SIZE as i32 {
                                 continue;
                             }
 
-                            if let Some(adj_tile) = world.tile_grid[nx as usize][ny as usize][WORLD_FLOOR_LAYER].as_ref() {
+                            if let Some(adj_tile) = tile_grid[nx as usize][ny as usize][WORLD_FLOOR_LAYER].as_ref() {
                                 if adj_tile.texture == "dungeon/water/deep_water" {
 
                                     // random number 1-8
@@ -180,7 +181,7 @@ pub fn generate_random_world() -> World {
 
                                     let tile_val = format!("dungeon/floor/sand_{}", r);
 
-                                    world.tile_grid[x][y][WORLD_FLOOR_LAYER] = Some(TileSet {
+                                    tile_grid[x][y][WORLD_FLOOR_LAYER] = Some(TileSet {
                                         position: Vec2::new(x as f32, y as f32),
                                         texture: tile_val,
                                         elevation: 0.0,
@@ -224,16 +225,16 @@ pub fn generate_random_world() -> World {
 
 
     // randomize the grass tiles
-    for x in 0..grid_size {
-        for y in 0..grid_size {
-            if let Some(tile) = world.tile_grid[x][y][WORLD_FLOOR_LAYER].as_ref() {
+    for x in 0..GRID_SIZE {
+        for y in 0..GRID_SIZE {
+            if let Some(tile) = tile_grid[x][y][WORLD_FLOOR_LAYER].as_ref() {
                 if tile.texture == "dungeon/floor/grass/grass0-dirt-mix_1" {
                     // random number 0-2
                     let r = random::<u8>() % 3 + 1;
 
                     let tile_val = format!("dungeon/floor/grass/grass0-dirt-mix_{}", r);
 
-                    world.tile_grid[x][y][WORLD_FLOOR_LAYER] = Some(TileSet {
+                    tile_grid[x][y][WORLD_FLOOR_LAYER] = Some(TileSet {
                         position: Vec2::new(x as f32, y as f32),
                         texture: tile_val,
                         elevation: 0.0,
@@ -244,5 +245,5 @@ pub fn generate_random_world() -> World {
     }
 
 
-    return world;
+    return tile_grid;
 }

@@ -110,15 +110,15 @@ pub fn update_creature_current_behavior(creature: &mut Creature, player: &Player
 
                 let mut xmove = 0.0;
                 let mut ymove = 0.0;
-    
                 let rand = gen_range(0.0, 1.0);
-                if rand < 0.25 {
+                
+                if rand < 0.20 {
                     xmove = 1.0;
-                } else if rand < 0.5 {
+                } else if rand < 0.40 {
                     xmove = -1.0;
-                } else if rand < 0.75 {
+                } else if rand < 0.60 {
                     ymove = 1.0;
-                } else {
+                } else if rand < 0.80 {
                     ymove = -1.0;
                 }
     
@@ -153,8 +153,8 @@ pub fn update_creature_current_behavior(creature: &mut Creature, player: &Player
 
 pub fn update(game_state: &mut GameState) {
     let elapsed = game_state.stats.elapsed;
-    let creatures = &mut game_state.creatures;
-    let player = &game_state.player;
+    let creatures = &mut game_state.world.creatures;
+    let player = &game_state.world.player;
 
 
     for index in 0..creatures.len() {
